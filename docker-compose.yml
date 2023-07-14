@@ -43,24 +43,56 @@ services:
       retries: 5
     networks:
       - mynetwork
+
   jenkins:
     build:
       context: ./jenkins
       dockerfile: Dockerfile
-    container_name: jenkins-docker
+    container_name: jenkins
+    restart: always
+    user: root
     ports:
       - "8080:8080"
     volumes:
-      - jenkins_home:/var/jenkins_home
+      - jenkins-data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-      - /usr/bin/docker-compose:/usr/bin/docker-compose
+      - /usr/local/bin/docker-compose:/usr/local/bin/docker-compose
     networks:
       - mynetwork
 
+  sonarqube:
+    image: "sonarqube:9.3-community"
+    container_name: sonarqube
+    environment:
+      - SONARQUBE_JDBC_USERNAME=sonarqube
+      - SONARQUBE_JDBC_PASSWORD=sonarqube
+    ports:
+      - "9000:9000"
+    networks:
+      - mynetwork
+    volumes:
+      - ./sonarqube_data:/var/lib/sonarqube/data
+      
+#  traefik:
+#    image: "traefik:v2.5"
+#    container_name: traefik
+#    command:
+#      - "--providers.docker=true"
+#      - "--providers.docker.exposedbydefault=false"
+#      - "--entrypoints.web.address=:80"
+#    ports:
+#      - "80:80"
+#      - "9090:9090"
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#      - ./traefik/traefik.toml:/traefik.toml
+#    networks:
+#      - mynetwork
+
 volumes:
   data:
-  jenkins_home:
+  jenkins-data:
 
 networks:
   mynetwork:
-    driver: bridge
+    name: "mynetwork"

@@ -1,20 +1,11 @@
-FROM jenkins/jenkins:lts
-
+FROM jenkins/jenkins:lts-jdk11
 USER root
 
-# Install sudo
-RUN apt-get update && \
-    apt-get -y install sudo && \
-    rm -rf /var/lib/apt/lists/*
-
-# Add jenkins user to sudoers with no password
-RUN echo "jenkins ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-# Create docker user
-RUN groupadd -g 999 docker && \
-    useradd -r -u 999 -g docker docker
-
-# Add jenkins user to docker group
+RUN apt-get update && apt-get install -y --no-install-recommends apt-utils && apt-get install -y curl
+RUN apt-get update && apt-get install -y --no-install-recommends apt-utils && apt-get install curl -y
+RUN curl -fsSl https://get.docker.com | sh
+RUN curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose
+RUN groupmod -g 999 docker
 RUN usermod -aG docker jenkins
 
 USER jenkins
