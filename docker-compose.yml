@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: front-docker
     ports:
-      - "80:3000"
+      - "3000:3000"
     volumes:
       - ./frontend/src:/app/src
     stdin_open: true
@@ -30,14 +30,20 @@ services:
       - mynetwork
 
   db:
-    image: "mongo"
+    image: mongo:latest
     container_name: db-docker
     ports:
       - "27017:27017"
     volumes:
       - data:/data/db
     healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.runCommand({ ping: 1 })"]
+      test:
+        [
+          "CMD",
+          "mongo",
+          "--eval",
+          "db.runCommand({ ping: 1 })"
+        ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -56,7 +62,7 @@ services:
     volumes:
       - jenkins-data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-      - /usr/local/bin/docker-compose:/usr/local/bin/docker-compose
+      - ./tmp:/usr/local/bin/docker-compose  # Adjust this path accordingly
     networks:
       - mynetwork
 
@@ -72,27 +78,26 @@ services:
   #     - mynetwork
   #   volumes:
   #     - ./sonarqube_data:/var/lib/sonarqube/data
-      
-#  traefik:
-#    image: "traefik:v2.5"
-#    container_name: traefik
-#    command:
-#      - "--providers.docker=true"
-#      - "--providers.docker.exposedbydefault=false"
-#      - "--entrypoints.web.address=:80"
-#    ports:
-#      - "80:80"
-#      - "9090:9090"
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
-#      - ./traefik/traefik.toml:/traefik.toml
-#    networks:
-#      - mynetwork
+
+  # traefik:
+  #   image: "traefik:v2.5"
+  #   container_name: traefik
+  #   command:
+  #     - "--providers.docker=true"
+  #     - "--providers.docker.exposedbydefault=false"
+  #     - "--entrypoints.web.address=:80"
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - ./traefik/traefik.toml:/traefik.toml
+  #   networks:
+  #     - mynetwork
 
 volumes:
-  data:
   jenkins-data:
+  data:
 
 networks:
   mynetwork:
-    name: "mynetwork"
+    name: mynetwork

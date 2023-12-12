@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checking Docker Compose version
+      run: docker-compose version
+
+    - name: Pulling the new commit
+      run: git pull origin main
+
+    - name: Testing frontend
+      working-directory: frontend
+      run: npm test
+
+    - name: Testing backend
+      working-directory: backend
+      run: npm test
+
+    - name: Show Docker Compose logs
+      run: docker-compose logs
