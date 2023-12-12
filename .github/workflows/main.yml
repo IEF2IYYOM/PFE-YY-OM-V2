@@ -15,11 +15,11 @@ jobs:
 
     - name: Testing frontend
       working-directory: frontend
-      run: npm test
+      run: npm run test
 
     - name: Testing backend
       working-directory: backend
-      run: npm test
+      run: npm run test
 
     - name: Show Docker Compose logs
       run: docker-compose logs
