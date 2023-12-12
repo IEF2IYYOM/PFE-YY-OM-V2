@@ -13,9 +13,6 @@ jobs:
     - name: Checking Docker Compose version
       run: docker-compose version
 
-    - name: Pulling the new commit
-      run: git pull origin main
-
     - name: Testing frontend
       working-directory: frontend
       run: npm test
